@@ -51,12 +51,11 @@ class FFNN:
         layer_dims = input_layer + hidden_layers + output_layer
         
         # Init weights W1, W2, ..., WD and bias b
-        self.params = {}
+        self.params = {} # parameter map
         for i in range(len(layer_dims) - 1):
             self.params[f"W{i+1}"] = init_weights(layer_dims[i], layer_dims[i + 1], method=weight_init)
             self.params[f"b{i+1}"] = np.zeros((1, layer_dims[i+1])) # bias b
 
-        print(self.params)
 
 
 
@@ -89,13 +88,38 @@ class FFNN:
 
 
 
+    # Does backpropagation and updates weights.
+    def backpropagate(self, y_true: np.ndarray):
+        gradients = {}
+        m = y_true.shape[0]
+        L = self.num_hid_layers + 1
 
+        dZ = self.cache[f"A{L}"] - y_true
+        for i in reversed(range(1, L + 1)):
+            A_prev = self.cache[f"A{i-1}"]
 
+            # computes derivative dW = ∂L/∂W for layer i (including L2 regularization)
+            A_prev_T = A_prev.T                         # transpose
+            dW_no_reg = np.matmul(A_prev_T, dZ) / m     # gradient without L2
+            W_reg_term = self.l2_coeff * self.params[f"W{i}"]  # L2 regularization term
+            dW = dW_no_reg + W_reg_term
+            gradients[f"W{i}"] = dW
+
+            # Computes derivative db = ∂L/∂b by summing dZ across the batch
+            db = np.sum(dZ, axis=0, keepdims=True) / m
+            gradients[f"b{i}"] = db
+
+            # Backpropagate dZ to the previous layer (skip when i == 1, since A0 is input)
+            if i > 1:
+                dA_prev = np.matmul(dZ, self.params[f"W{i}"].T)
+                dZ = dA_prev * self.activation_derivative(self.cache[f"Z{i-1}"])
+
+        self.optimizer.update(self.params, gradients)
 
 
 
 #Initializes weights using He initialization.
-def init_weights(in_features, out_features, method="he") -> Float[np.ndarray, "in_feat, out_feat"]:
+def init_weights(in_features, out_features, method="he") -> Float[np.ndarray, "in_feat out_feat"]:
     if method == "he":
         scale = np.sqrt(2.0 / in_features)
     # TODO: Add another wieght init method
