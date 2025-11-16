@@ -3,10 +3,10 @@ import numpy as np
 
 
 
-def rectified_linea_unit(x):
+def rectified_linear_unit(x):
     return np.maximum(0, x)
 
-def rectified_linea_unit_derivative(x):
+def rectified_linear_unit_derivative(x):
     return (x > 0).astype(float)
 
 
@@ -30,3 +30,9 @@ def softmax(z):
     return exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
 
+# Activation functions map
+activations_map = {
+    "relu": (rectified_linear_unit, rectified_linear_unit_derivative),
+    "tanh": (hyperbolic_tan, hyperbolic_tan_derivative),
+    "sigmoid": (sigmoid, sigmoid_derivative),
+}
