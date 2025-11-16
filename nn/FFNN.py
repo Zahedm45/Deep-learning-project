@@ -9,10 +9,10 @@ class FFNN:
 
     def __init__(
         self,
-        num_features: int,
-        num_output: int,                    # number of output neurons
-        num_hidden_layers: int = 2,
-        hidden_units: int = 128,
+        n_features: int,
+        n_output_ne: int,                    # number of output neurons/nodes
+        n_hid_layers: int = 2,            #
+        n_hid_neurons: int = 128,            # Number of hidden neurons/nodes
         activation: str = "relu",
         weight_init: str = "he",
         optimizer: str = "adam",
@@ -25,8 +25,8 @@ class FFNN:
         self.cache = {}
         np.random.seed(seed)
 
-        self.num_hid_layers = num_hidden_layers
-        self.hidden_units = hidden_units
+        self.num_hid_layers = n_hid_layers
+        self.hidden_units = n_hid_neurons
         self.activation_name = activation
         self.weight_init = weight_init
         self.batch_size = batch_size
@@ -44,9 +44,9 @@ class FFNN:
 
 
         # Creating an array containing number of neurons in each layer.
-        input_layer = [num_features]
-        hidden_layers = [hidden_units] * num_hidden_layers
-        output_layer = [num_output]
+        input_layer = [n_features]
+        hidden_layers = [n_hid_neurons] * n_hid_layers
+        output_layer = [n_output_ne]
         # Concatenation, so one array like [10, 128, 128, 3, ..., total layers]
         layer_dims = input_layer + hidden_layers + output_layer
         
@@ -91,7 +91,7 @@ class FFNN:
     # Does backpropagation and updates weights.
     def backpropagate(self, y_true: np.ndarray):
         gradients = {}
-        m = y_true.shape[0]
+        n_samples = y_true.shape[0]
         L = self.num_hid_layers + 1
 
         dZ = self.cache[f"A{L}"] - y_true
@@ -100,13 +100,13 @@ class FFNN:
 
             # computes derivative dW = ∂L/∂W for layer i (including L2 regularization)
             A_prev_T = A_prev.T                         # transpose
-            dW_no_reg = np.matmul(A_prev_T, dZ) / m     # gradient without L2
+            dW_no_reg = np.matmul(A_prev_T, dZ) / n_samples     # gradient without L2
             W_reg_term = self.l2_coeff * self.params[f"W{i}"]  # L2 regularization term
             dW = dW_no_reg + W_reg_term
             gradients[f"W{i}"] = dW
 
             # Computes derivative db = ∂L/∂b by summing dZ across the batch
-            db = np.sum(dZ, axis=0, keepdims=True) / m
+            db = np.sum(dZ, axis=0, keepdims=True) / n_samples
             gradients[f"b{i}"] = db
 
             # Backpropagate dZ to the previous layer (skip when i == 1, since A0 is input)
@@ -116,6 +116,34 @@ class FFNN:
 
         self.optimizer.update(self.params, gradients)
 
+
+    # Computes cross-entropy loss with optional L2 regularization.
+    def compute_loss(self, y_pred: np.ndarray, y_true: np.ndarray) -> float:
+        n_samples = y_true.shape[0]
+
+        # ----- Cross-entropy loss -----
+        # Add small epsilon to avoid log(0)
+        epsilon = 1e-8
+        log_probs = np.log(y_pred + epsilon)
+        ce_loss = -np.sum(y_true * log_probs) / n_samples
+
+        # L2 regularization loss
+        l2_loss = 0.0
+        for k, W in self.params.items():
+            if k.startswith("W"):  # only regularizes weight matrices
+                l2_loss += np.sum(W ** 2)
+
+        l2_loss = 0.5 * self.l2_coeff * l2_loss
+
+        # Total loss
+        total_loss = ce_loss + l2_loss
+        return total_loss
+
+
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        probs = self.feed_forward(X)
+        return np.argmax(probs, axis=1)
 
 
 #Initializes weights using He initialization.
