@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_iris
 from data import Data
+from sklearn.preprocessing import StandardScaler
+
 
 
 def load_fashion_mnist():
@@ -121,8 +123,13 @@ def load_cifar10():
 
 def load_iris_dataset():
     iris = load_iris()
+
     X = iris.data.astype(np.float32)     # shape (150, 4)
     y = iris.target                       # shape (150,)
+
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X).astype(np.float32)
+
 
     n_features = X.shape[1]
     n_classes = len(np.unique(y))
@@ -148,3 +155,20 @@ def load_iris_dataset():
         n_features=n_features,
         n_classes=n_classes
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
