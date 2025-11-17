@@ -101,4 +101,4 @@ def load_cifar10():
     y_val   = encode_one_hot(y_val, 10)
     y_test  = encode_one_hot(y_test, 10)
 
-    return Data(X_train, y_train, X_val, y_val, X_test, y_test)
+    return Data(X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val, X_test=X_test, y_test=y_test)
