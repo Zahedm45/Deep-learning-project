@@ -9,13 +9,13 @@ class FFNN:
 
     def __init__(
         self,
-        n_features: int,
+        n_features: int,                     # Number of features (number of input neurons)
         n_output_ne: int,                    # number of output neurons/nodes
-        n_hid_layers: int = 2,            #
+        n_hid_layers: int = 2,               # Number of hidden layers
         n_hid_neurons: int = 128,            # Number of hidden neurons/nodes
-        activation: str = "relu",
-        weight_init: str = "he",
-        optimizer: str = "adam",
+        activation: str = "relu",            # Activation function to be used
+        weight_init: str = "he",             # Intial weights initializer to be used
+        optimizer: str = "adam",             # Optimizer func to be used
         learning_rate: float = 0.001,
         l2_coeff: float = 0.0,
         batch_size: int = 128,
