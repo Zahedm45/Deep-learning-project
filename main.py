@@ -5,62 +5,111 @@ from data import Data
 from nn.FFNN import FFNN
 from utils import load_fashion_mnist, load_cifar10, load_iris_dataset
 
-if __name__ == "__main__":
+import wandb
 
 
-    mn_data: Data = load_fashion_mnist()
-    mn_model = FFNN(
+def sweep_train():
+    wandb.init()
+    cfg = wandb.config
+
+    mn_data = load_fashion_mnist()
+
+    model = FFNN(
         n_features=mn_data.n_features,
         n_output_ne=mn_data.n_classes,
-        n_hid_layers=2,
-        n_hid_neurons=128,
-        activation="relu",
-        weight_init="he",
-        optimizer="adam",
-        learning_rate=0.001,
-        l2_coeff=1e-4,
-        batch_size=128,
-        epochs=10
+        n_hid_layers=cfg.n_hid_layers,
+        n_hid_neurons=cfg.n_hid_neurons,
+        activation=cfg.activation,
+        weight_init=cfg.weight_init,
+        optimizer=cfg.optimizer,
+        learning_rate=cfg.learning_rate,
+        l2_coeff=cfg.l2_coeff,
+        batch_size=cfg.batch_size,
+        epochs=cfg.epochs
     )
 
-    run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val)
-    run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
-
-
-
-    ci_data: Data = load_cifar10()
-    ci_model = FFNN(
-        n_features=ci_data.n_features,
-        n_output_ne=ci_data.n_classes,
-        n_hid_layers=2,
-        n_hid_neurons=128,
-        activation="relu",
-        weight_init="he",
-        optimizer="adam",
-        learning_rate=0.001,
-        l2_coeff=1e-4,
-        batch_size=128,
-        epochs=10
+    run.train(
+        model,
+        mn_data.X_train, mn_data.y_train,
+        mn_data.X_val, mn_data.y_val,
     )
 
-    run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 5)
-    run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
+
+sweep_config = {
+    "method": "bayes",
+    "metric": {"name": "val_acc", "goal": "maximize"},
+    "parameters": {
+        "n_hid_layers": {"values": [1, 2, 3]},
+        "n_hid_neurons": {"values": [64, 128, 256]},
+        "learning_rate": {"min": 1e-4, "max": 1e-2},
+        "l2_coeff": {"values": [0.0, 1e-4, 1e-3]},
+        "batch_size": {"values": [64, 128, 256]},
+        "activation": {"values": ["relu", "tanh"]},
+        "optimizer": {"values": ["adam", "sgd"]},
+        "weight_init": {"values": ["he", "xavier"]},
+        "epochs": {"value": 15}
+    }
+}
 
 
-    ir_data: Data = load_iris_dataset()
-    ir_model = FFNN(
-        n_features=ir_data.n_features,
-        n_output_ne=ir_data.n_classes,
-        n_hid_layers=2,
-        n_hid_neurons=8,
-        activation="relu",
-        weight_init="he",
-        optimizer="adam",
-        learning_rate=0.001,
-        l2_coeff=1e-4,
-        batch_size=8,
-        epochs=100
-    )
+if __name__ == "__main__":
+    wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
+    sweep_id = wandb.sweep(sweep_config, project="ffnn-sweep")
+    wandb.agent(sweep_id, function=sweep_train, count=30)
 
-    run.train(ir_model, ir_data.X_train, ir_data.y_train, ir_data.X_val, ir_data.y_val, 50)
-    run.evaluate(ir_model, ir_data.X_test, ir_data.y_test)
+    # mn_data: Data = load_fashion_mnist()
+    # mn_model = FFNN(
+    #     n_features=mn_data.n_features,
+    #     n_output_ne=mn_data.n_classes,
+    #     n_hid_layers=2,
+    #     n_hid_neurons=128,
+    #     activation="relu",
+    #     weight_init="he",
+    #     optimizer="adam",
+    #     learning_rate=0.001,
+    #     l2_coeff=1e-4,
+    #     batch_size=128,
+    #     epochs=10
+    # )
+    #
+    # run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val)
+    # run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
+    #
+    #
+    #
+    # ci_data: Data = load_cifar10()
+    # ci_model = FFNN(
+    #     n_features=ci_data.n_features,
+    #     n_output_ne=ci_data.n_classes,
+    #     n_hid_layers=2,
+    #     n_hid_neurons=128,
+    #     activation="relu",
+    #     weight_init="he",
+    #     optimizer="adam",
+    #     learning_rate=0.001,
+    #     l2_coeff=1e-4,
+    #     batch_size=128,
+    #     epochs=10
+    # )
+    #
+    # run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 5)
+    # run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
+    #
+    #
+    # ir_data: Data = load_iris_dataset()
+    # ir_model = FFNN(
+    #     n_features=ir_data.n_features,
+    #     n_output_ne=ir_data.n_classes,
+    #     n_hid_layers=2,
+    #     n_hid_neurons=8,
+    #     activation="relu",
+    #     weight_init="he",
+    #     optimizer="adam",
+    #     learning_rate=0.001,
+    #     l2_coeff=1e-4,
+    #     batch_size=8,
+    #     epochs=100
+    # )
+    #
+    # run.train(ir_model, ir_data.X_train, ir_data.y_train, ir_data.X_val, ir_data.y_val, 50)
+    # run.evaluate(ir_model, ir_data.X_test, ir_data.y_test)

@@ -1,5 +1,5 @@
 import numpy as np
-
+import wandb
 
 def iter_batches(X, y, batch_size=128, shuffle=True):
 
@@ -22,6 +22,7 @@ def train(model, X_train: np.ndarray, y_train: np.ndarray,
           X_val: np.ndarray, y_val: np.ndarray, patience=2):
     best_val_acc = 0.0
     no_impr_counter = 0
+    using_wandb = wandb.run is not None  # True when inside a sweep
 
     for epoch in range(model.epochs):
         losses = []
@@ -34,9 +35,20 @@ def train(model, X_train: np.ndarray, y_train: np.ndarray,
 
         y_val_pred = model.predict(X_val)
         val_acc = compute_accuracy(y_val_pred, np.argmax(y_val, axis=1))
+        avg_loss = np.mean(losses)
 
         print(f"Epoch {epoch+1:02d}/{model.epochs} | "
               f"Loss: {np.mean(losses):.3f} | Val Acc: {val_acc:.3f}")
+
+
+        # Log metrics to wandb
+        if using_wandb:
+            wandb.log({
+                "epoch": epoch,
+                "train_loss": avg_loss,
+                "val_acc": val_acc
+            })
+
 
         # Early stop to avoid overfitting
         if val_acc > best_val_acc:

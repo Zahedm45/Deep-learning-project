@@ -150,6 +150,8 @@ class FFNN:
 def init_weights(in_features, out_features, method="he") -> Float[np.ndarray, "in_feat out_feat"]:
     if method == "he":
         scale = np.sqrt(2.0 / in_features)
+    elif method == "xavier":
+        scale = np.sqrt(1.0 / in_features)
     # TODO: Add another wieght init method
     else:
         scale = 0.01
