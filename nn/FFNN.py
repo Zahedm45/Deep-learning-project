@@ -1,7 +1,7 @@
 from nn.activation_functions import activations_map, softmax
 import numpy as np
 from jaxtyping import Float
-from nn.optimizers import Adam, SGD
+from nn.optimizers import Adam, SGD, SGDMomentum, OptmName, Nesterov
 
 
 class FFNN:
@@ -15,7 +15,7 @@ class FFNN:
         n_hid_neurons: int = 128,            # Number of hidden neurons/nodes
         activation: str = "relu",            # Activation function to be used
         weight_init: str = "he",             # Intial weights initializer to be used
-        optimizer: str = "adam",             # Optimizer func to be used
+        optimizer: str = OptmName.adam,             # Optimizer func to be used
         learning_rate: float = 0.001,
         l2_coeff: float = 0.0,
         batch_size: int = 128,
@@ -37,10 +37,17 @@ class FFNN:
         self.activation, self.activation_derivative = activations_map[activation]
 
         # Optimizer
-        if optimizer == "adam":
+        if optimizer == OptmName.adam:
             self.optimizer = Adam(learning_rate)
-        else:
+        elif optimizer == OptmName.sgd :
             self.optimizer = SGD(learning_rate)
+        elif optimizer == OptmName.sgd_momentum:
+            self.optimizer = SGDMomentum(learning_rate)
+        elif optimizer == OptmName.nesterov:
+            self.optimizer = Nesterov(learning_rate)
+        else:
+            RuntimeError(f"Unknown optimizer {optimizer}")
+
 
 
         # Creating an array containing number of neurons in each layer.

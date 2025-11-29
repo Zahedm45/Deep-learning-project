@@ -1,6 +1,11 @@
 
 import numpy as np
 
+class ActiNames:
+    relu = "relu"
+    tanh = "tanh"
+    sigmoid = "sigmoid"
+    as_arr = [relu, tanh, sigmoid]
 
 
 def rectified_linear_unit(x):
@@ -32,7 +37,7 @@ def softmax(z):
 
 # Activation functions map
 activations_map = {
-    "relu": (rectified_linear_unit, rectified_linear_unit_derivative),
-    "tanh": (hyperbolic_tan, hyperbolic_tan_derivative),
-    "sigmoid": (sigmoid, sigmoid_derivative),
+    ActiNames.relu: (rectified_linear_unit, rectified_linear_unit_derivative),
+    ActiNames.tanh: (hyperbolic_tan, hyperbolic_tan_derivative),
+    ActiNames.sigmoid: (sigmoid, sigmoid_derivative),
 }

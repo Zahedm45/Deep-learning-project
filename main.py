@@ -1,8 +1,10 @@
 from operator import irshift
 
 import run
+from WandbConfig import sweep_config1, sweep_config2
 from data import Data
 from nn.FFNN import FFNN
+from nn.optimizers import OptmName
 from utils import load_fashion_mnist, load_cifar10, load_iris_dataset
 
 import wandb
@@ -35,26 +37,15 @@ def sweep_train():
     )
 
 
-sweep_config = {
-    "method": "bayes",
-    "metric": {"name": "val_acc", "goal": "maximize"},
-    "parameters": {
-        "n_hid_layers": {"values": [1, 2, 3]},
-        "n_hid_neurons": {"values": [64, 128, 256]},
-        "learning_rate": {"min": 1e-4, "max": 1e-2},
-        "l2_coeff": {"values": [0.0, 1e-4, 1e-3]},
-        "batch_size": {"values": [64, 128, 256]},
-        "activation": {"values": ["relu", "tanh"]},
-        "optimizer": {"values": ["adam", "sgd"]},
-        "weight_init": {"values": ["he", "xavier"]},
-        "epochs": {"value": 15}
-    }
-}
+
+
+
+
 
 
 if __name__ == "__main__":
     wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
-    sweep_id = wandb.sweep(sweep_config, project="ffnn-sweep")
+    sweep_id = wandb.sweep(sweep_config1, project="ffnn-sweep")
     wandb.agent(sweep_id, function=sweep_train, count=30)
 
     # mn_data: Data = load_fashion_mnist()

@@ -41,7 +41,7 @@ def train(model, X_train: np.ndarray, y_train: np.ndarray,
               f"Loss: {np.mean(losses):.3f} | Val Acc: {val_acc:.3f}")
 
 
-        # Log metrics to wandb
+        # Logs metrics to wandb
         if using_wandb:
             wandb.log({
                 "epoch": epoch,
