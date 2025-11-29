@@ -1,7 +1,7 @@
 from operator import irshift
 
 import run
-from WandbConfig import sweep_config1, sweep_config2
+from WandbConfig import sweep_config1, sweep_config2, cifar1
 from data import Data
 from nn.FFNN import FFNN
 from nn.Initializers import Init
@@ -12,15 +12,15 @@ from utils import load_fashion_mnist, load_cifar10, load_iris_dataset
 import wandb
 
 
-def sweep_train():
+def sweep_train(data):
     wandb.init()
     cfg = wandb.config
 
-    mn_data = load_fashion_mnist()
+    #mn_data = load_fashion_mnist()
 
     model = FFNN(
-        n_features=mn_data.n_features,
-        n_output_ne=mn_data.n_classes,
+        n_features=data.n_features,
+        n_output_ne=data.n_classes,
         n_hid_layers=cfg.n_hid_layers,
         n_hid_neurons=cfg.n_hid_neurons,
         activation=cfg.activation,
@@ -34,8 +34,8 @@ def sweep_train():
 
     run.train(
         model,
-        mn_data.X_train, mn_data.y_train,
-        mn_data.X_val, mn_data.y_val,
+        data.X_train, data.y_train,
+        data.X_val, data.y_val,
     )
 
 
@@ -46,36 +46,42 @@ def sweep_train():
 
 
 if __name__ == "__main__":
-    # wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
-    # sweep_id = wandb.sweep(sweep_config1, project="ffnn-sweep")
+    wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
+    # sweep_id = wandb.sweep(sweep_config1, project="cifar")
     # wandb.agent(sweep_id, function=sweep_train, count=30)
 
-    mn_data: Data = load_fashion_mnist()
-    mn_model = FFNN(
-        n_features=mn_data.n_features,
-        n_output_ne=mn_data.n_classes,
-        n_hid_layers=3,
-        n_hid_neurons=128,
-        activation=Acti.relu,
-        weight_init=Init.xavier,
-        optimizer=Optim.nesterov,
-        learning_rate=0.007300711433546043,
-        l2_coeff=0,
-        batch_size=64,
-        epochs=30
-    )
+    # mn_data: Data = load_fashion_mnist()
+    # mn_model = FFNN(
+    #     n_features=mn_data.n_features,
+    #     n_output_ne=mn_data.n_classes,
+    #     n_hid_layers=3,
+    #     n_hid_neurons=128,
+    #     activation=Acti.relu,
+    #     weight_init=Init.xavier,
+    #     optimizer=Optim.nesterov,
+    #     learning_rate=0.007300711433546043,
+    #     l2_coeff=0,
+    #     batch_size=64,
+    #     epochs=30
+    # )
+    #
+    # run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
+    # run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
 
-    run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
-    run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
-    #
-    #
-    #
-    # ci_data: Data = load_cifar10()
+
+    #ci_data: Data = load_cifar10()
+    # sweep_id = wandb.sweep(cifar1, project="cifar")
+    # wandb.agent(sweep_id, function=lambda: sweep_train(ci_data), count=30)
+
+
+
+
+
     # ci_model = FFNN(
     #     n_features=ci_data.n_features,
     #     n_output_ne=ci_data.n_classes,
     #     n_hid_layers=2,
-    #     n_hid_neurons=128,
+    #     n_hid_neurons=256,
     #     activation="relu",
     #     weight_init="he",
     #     optimizer="adam",

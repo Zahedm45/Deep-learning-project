@@ -34,6 +34,9 @@ class FFNN:
         self.epochs = epochs
         self.l2_coeff = l2_coeff
 
+        # Dropout
+        self.dropout_rate = 0.0
+        self.is_training = True
 
         self.activation, self.activation_derivative = activations_map[activation]
 
@@ -79,7 +82,15 @@ class FFNN:
             Z = weighted_sum + b
 
             self.cache[f"Z{i}"] = Z
-            self.cache[f"A{i}"] = self.activation(Z)
+            A = self.activation(Z)
+
+
+            if self.dropout_rate > 0 and self.is_training:
+                mask = (np.random.rand(*A.shape) > self.dropout_rate).astype(np.float32)
+                A = A * mask / (1.0 - self.dropout_rate)
+                self.cache[f"dropout_mask_{i}"] = mask
+
+            self.cache[f"A{i}"] = A
 
         # Output layer
         A_prev = self.cache[f"A{self.num_hid_layers}"]  # previous layer activation
@@ -120,6 +131,12 @@ class FFNN:
             # Backpropagate dZ to the previous layer (skip when i == 1, since A0 is input)
             if i > 1:
                 dA_prev = np.matmul(dZ, self.params[f"W{i}"].T)
+
+                # Apply dropout mask in backprop (skip for output layer)
+                if self.dropout_rate > 0 and (i - 1) <= self.num_hid_layers and (i - 1) >= 1:
+                    mask = self.cache[f"dropout_mask_{i - 1}"]
+                    dA_prev = dA_prev * mask / (1.0 - self.dropout_rate)
+
                 dZ = dA_prev * self.activation_derivative(self.cache[f"Z{i-1}"])
 
         self.optimizer.update(self.params, gradients)
@@ -150,7 +167,9 @@ class FFNN:
 
 
     def predict(self, X: np.ndarray) -> np.ndarray:
+        self.is_training = False
         probs = self.feed_forward(X)
+        self.is_training = True
         return np.argmax(probs, axis=1)
 
 

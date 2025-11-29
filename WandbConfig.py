@@ -34,3 +34,27 @@ sweep_config2 = {
         "epochs": {"value": 15}
     }
 }
+
+
+
+cifar1 = {
+    "method": "bayes",
+    "metric": {"name": "val_acc", "goal": "maximize"},
+
+    "parameters": {
+        "n_hid_layers": {"values": [2, 3, 4, 5]},
+        "n_hid_neurons": {"values": [256, 512, 768, 1024]},
+        "activation": {"values": Acti.as_arr},
+        "optimizer": {"values": Optim.as_arr},
+        "weight_init": {"values": Init.as_arr},
+        "learning_rate": {
+            "distribution": "log_uniform_values",
+            "min": 1e-4,
+            "max": 5e-3
+        },
+        "l2_coeff": {"values": [0.0, 1e-5, 1e-4, 5e-4, 1e-3]},
+        "dropout": {"values": [0.0, 0.1, 0.2, 0.3, 0.5]},
+        "batch_size": {"values": [64, 128, 256]},
+        "epochs": {"value": 40}
+    }
+}
