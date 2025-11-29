@@ -13,7 +13,8 @@ def init_weights(in_features, out_features, method=Init.he) -> Float[np.ndarray,
     if method == Init.he:
         scale = np.sqrt(2.0 / in_features)
     elif method == Init.xavier:
-        scale = np.sqrt(1.0 / in_features)
+        scale = np.sqrt(2.0 / (in_features + out_features))
+
     else:
         scale = 0.01
     return np.random.randn(in_features, out_features) * scale

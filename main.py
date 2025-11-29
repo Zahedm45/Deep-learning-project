@@ -4,7 +4,9 @@ import run
 from WandbConfig import sweep_config1, sweep_config2
 from data import Data
 from nn.FFNN import FFNN
-from nn.optimizers import OptmName
+from nn.Initializers import Init
+from nn.activation_functions import Acti
+from nn.optimizers import Optim
 from utils import load_fashion_mnist, load_cifar10, load_iris_dataset
 
 import wandb
@@ -44,11 +46,11 @@ def sweep_train():
 
 
 if __name__ == "__main__":
-    wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
-    sweep_id = wandb.sweep(sweep_config1, project="ffnn-sweep")
-    wandb.agent(sweep_id, function=sweep_train, count=30)
+    # wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
+    # sweep_id = wandb.sweep(sweep_config1, project="ffnn-sweep")
+    #wandb.agent(sweep_id, function=sweep_train, count=30)
 
-    # mn_data: Data = load_fashion_mnist()
+    mn_data: Data = load_fashion_mnist()
     # mn_model = FFNN(
     #     n_features=mn_data.n_features,
     #     n_output_ne=mn_data.n_classes,
@@ -62,9 +64,59 @@ if __name__ == "__main__":
     #     batch_size=128,
     #     epochs=10
     # )
+
+    mn_model = FFNN(
+        n_features=mn_data.n_features,
+        n_output_ne=mn_data.n_classes,
+        n_hid_layers=3,
+        n_hid_neurons=128,
+        activation=Acti.relu,
+        weight_init=Init.xavier,
+        optimizer=Optim.nesterov,
+        learning_rate=0.007300711433546043,
+        l2_coeff=0,
+        batch_size=64,
+        epochs=30
+    )
+
+    # mn_model = FFNN(
+    #     n_features=mn_data.n_features,
+    #     n_output_ne=mn_data.n_classes,
+    #     n_hid_layers=3,
+    #     n_hid_neurons=256,
+    #     activation=Acti.relu,
+    #     weight_init=Init.he,
+    #     optimizer=Optim.adam,
+    #     learning_rate=0.001,
+    #     l2_coeff=1e-4,  # helps stability
+    #     batch_size=64,
+    #     epochs=17
+    # )
+
+    # mn_model = FFNN(
+    #     n_features=mn_data.n_features,
+    #     n_output_ne=mn_data.n_classes,
     #
-    # run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val)
-    # run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
+    #     # Architecture
+    #     n_hid_layers=3,
+    #     n_hid_neurons=512,
+    #     activation=Acti.relu,
+    #
+    #     # Weight initialization
+    #     weight_init=Init.he,
+    #
+    #     # Optimizer
+    #     optimizer=Optim.adam,
+    #     learning_rate=0.001,
+    #
+    #     l2_coeff=1e-4,
+    #     batch_size=128,
+    #
+    #     epochs=15
+    # )
+
+    run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
+    run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
     #
     #
     #

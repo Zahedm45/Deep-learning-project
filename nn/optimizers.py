@@ -1,7 +1,7 @@
 
 import numpy as np
 
-class OptmName:
+class Optim:
     adam = "adam"
     sgd = "sgd"
     nesterov = "nesterov"

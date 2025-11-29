@@ -1,7 +1,7 @@
 
 import numpy as np
 
-class ActiNames:
+class Acti:
     relu = "relu"
     tanh = "tanh"
     sigmoid = "sigmoid"
@@ -29,15 +29,17 @@ def sigmoid_derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 
+
 def softmax(z):
     z = z - np.max(z, axis=1, keepdims=True)
     exp_z = np.exp(z)
     return exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
 
+
 # Activation functions map
 activations_map = {
-    ActiNames.relu: (rectified_linear_unit, rectified_linear_unit_derivative),
-    ActiNames.tanh: (hyperbolic_tan, hyperbolic_tan_derivative),
-    ActiNames.sigmoid: (sigmoid, sigmoid_derivative),
+    Acti.relu: (rectified_linear_unit, rectified_linear_unit_derivative),
+    Acti.tanh: (hyperbolic_tan, hyperbolic_tan_derivative),
+    Acti.sigmoid: (sigmoid, sigmoid_derivative),
 }

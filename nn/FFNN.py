@@ -1,7 +1,8 @@
+from nn import Initializers
 from nn.activation_functions import activations_map, softmax
 import numpy as np
 from jaxtyping import Float
-from nn.optimizers import Adam, SGD, SGDMomentum, OptmName, Nesterov
+from nn.optimizers import Adam, SGD, SGDMomentum, Optim, Nesterov
 
 
 class FFNN:
@@ -15,7 +16,7 @@ class FFNN:
         n_hid_neurons: int = 128,            # Number of hidden neurons/nodes
         activation: str = "relu",            # Activation function to be used
         weight_init: str = "he",             # Intial weights initializer to be used
-        optimizer: str = OptmName.adam,             # Optimizer func to be used
+        optimizer: str = Optim.adam,             # Optimizer func to be used
         learning_rate: float = 0.001,
         l2_coeff: float = 0.0,
         batch_size: int = 128,
@@ -37,13 +38,13 @@ class FFNN:
         self.activation, self.activation_derivative = activations_map[activation]
 
         # Optimizer
-        if optimizer == OptmName.adam:
+        if optimizer == Optim.adam:
             self.optimizer = Adam(learning_rate)
-        elif optimizer == OptmName.sgd :
+        elif optimizer == Optim.sgd :
             self.optimizer = SGD(learning_rate)
-        elif optimizer == OptmName.sgd_momentum:
+        elif optimizer == Optim.sgd_momentum:
             self.optimizer = SGDMomentum(learning_rate)
-        elif optimizer == OptmName.nesterov:
+        elif optimizer == Optim.nesterov:
             self.optimizer = Nesterov(learning_rate)
         else:
             RuntimeError(f"Unknown optimizer {optimizer}")
@@ -60,7 +61,7 @@ class FFNN:
         # Init weights W1, W2, ..., WD and bias b
         self.params = {} # parameter map
         for i in range(len(layer_dims) - 1):
-            self.params[f"W{i+1}"] = init_weights(layer_dims[i], layer_dims[i + 1], method=weight_init)
+            self.params[f"W{i+1}"] = Initializers.init_weights(layer_dims[i], layer_dims[i + 1], method=weight_init)
             self.params[f"b{i+1}"] = np.zeros((1, layer_dims[i+1])) # bias b
 
 
@@ -152,17 +153,6 @@ class FFNN:
         probs = self.feed_forward(X)
         return np.argmax(probs, axis=1)
 
-
-#Initializes weights using He initialization.
-def init_weights(in_features, out_features, method="he") -> Float[np.ndarray, "in_feat out_feat"]:
-    if method == "he":
-        scale = np.sqrt(2.0 / in_features)
-    elif method == "xavier":
-        scale = np.sqrt(1.0 / in_features)
-    # TODO: Add another wieght init method
-    else:
-        scale = 0.01
-    return np.random.randn(in_features, out_features) * scale
 
 
 
