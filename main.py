@@ -62,14 +62,15 @@ if __name__ == "__main__":
     #     learning_rate=0.007300711433546043,
     #     l2_coeff=0,
     #     batch_size=64,
-    #     epochs=30
+    #     epochs=30,
+    #     dropout_rate=0.25
     # )
     #
     # run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
     # run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
 
 
-    #ci_data: Data = load_cifar10()
+    ci_data: Data = load_cifar10()
     # sweep_id = wandb.sweep(cifar1, project="cifar")
     # wandb.agent(sweep_id, function=lambda: sweep_train(ci_data), count=30)
 
@@ -77,22 +78,23 @@ if __name__ == "__main__":
 
 
 
-    # ci_model = FFNN(
-    #     n_features=ci_data.n_features,
-    #     n_output_ne=ci_data.n_classes,
-    #     n_hid_layers=2,
-    #     n_hid_neurons=256,
-    #     activation="relu",
-    #     weight_init="he",
-    #     optimizer="adam",
-    #     learning_rate=0.001,
-    #     l2_coeff=1e-4,
-    #     batch_size=128,
-    #     epochs=10
-    # )
-    #
-    # run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 5)
-    # run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
+    ci_model = FFNN(
+        n_features=ci_data.n_features,
+        n_output_ne=ci_data.n_classes,
+        n_hid_layers=2,
+        n_hid_neurons=256,
+        activation="relu",
+        weight_init="he",
+        optimizer="adam",
+        learning_rate=0.001,
+        l2_coeff=1e-4,
+        batch_size=128,
+        epochs=20,
+        dropout_rate=0.0
+    )
+
+    run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 15)
+    run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
     #
     #
     # ir_data: Data = load_iris_dataset()

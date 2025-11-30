@@ -42,7 +42,7 @@ cifar1 = {
     "metric": {"name": "val_acc", "goal": "maximize"},
 
     "parameters": {
-        "n_hid_layers": {"values": [2, 3, 4, 5]},
+        "n_hid_layers": {"values": [2, 3, 4]},
         "n_hid_neurons": {"values": [256, 512, 768, 1024]},
         "activation": {"values": Acti.as_arr},
         "optimizer": {"values": Optim.as_arr},

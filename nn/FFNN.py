@@ -22,6 +22,7 @@ class FFNN:
         batch_size: int = 128,
         epochs: int = 20,
         seed: int = 42,
+        dropout_rate: float = 0.0
     ):
         self.cache = {}
         np.random.seed(seed)
@@ -35,7 +36,7 @@ class FFNN:
         self.l2_coeff = l2_coeff
 
         # Dropout
-        self.dropout_rate = 0.0
+        self.dropout_rate = dropout_rate
         self.is_training = True
 
         self.activation, self.activation_derivative = activations_map[activation]
