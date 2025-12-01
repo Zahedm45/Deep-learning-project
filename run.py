@@ -1,5 +1,7 @@
 import numpy as np
 import wandb
+from utils import decode_one_hot
+
 
 def iter_batches(X, y, batch_size=128, shuffle=True):
 
@@ -64,7 +66,8 @@ def train(model, X_train: np.ndarray, y_train: np.ndarray,
 
 def evaluate(model, X_test, y_test):
     y_pred = model.predict(X_test)
-    val_acc = compute_accuracy(y_pred, np.argmax(y_test, axis=1))
+    decoded = decode_one_hot(y_test)
+    val_acc = compute_accuracy(y_pred, decoded)
     print(f"Test Accuracy: {val_acc:.3f}")
 
 

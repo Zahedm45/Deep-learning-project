@@ -60,9 +60,6 @@ def encode_one_hot(y: np.ndarray, num_classes: int) -> np.ndarray:
     return np.eye(num_classes, dtype=np.float32)[y]
 
 
-# def encode_one_hot(y: np.ndarray, num_classes: int) -> np.ndarray:
-#     return np.eye(num_classes)[y]
-
 def decode_one_hot(y_one_hot: np.ndarray) -> np.ndarray:
     return np.argmax(y_one_hot, axis=1)
 
