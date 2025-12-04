@@ -44,7 +44,7 @@ def cifa():
     # sweep_id = wandb.sweep(cifar1, project="cifar")
     # wandb.agent(sweep_id, function=lambda: sweep_train(ci_data), count=30)
 
-    ci_model = best_cifar
+    ci_model = best_cifar(ci_data)
 
     run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 15)
     run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
@@ -55,7 +55,7 @@ def mnist():
     # sweep_id = wandb.sweep(sweep_config1, project="fmn")
     # wandb.agent(sweep_id, function=lambda: sweep_train(mn_data), count=40)
 
-    mn_model = best_fnm
+    mn_model = best_fnm(mn_data)
 
     run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
     run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
@@ -85,7 +85,7 @@ def irish():
 
 
 if __name__ == "__main__":
-    wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
+    #wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
     mnist()
     # cifa()
 

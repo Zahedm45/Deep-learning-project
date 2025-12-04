@@ -2,7 +2,6 @@ from nn.FFNN import FFNN
 from nn.Initializers import Init
 from nn.activation_functions import Acti
 from nn.optimizers import Optim
-from notebook import mn_data, ci_data
 
 sweep_config1 = {
     "method": "bayes",
@@ -64,34 +63,35 @@ cifar1 = {
         "epochs": {"value": 40}
     }
 }
+def best_fnm(mn_data):
+    return FFNN(
+        n_features=mn_data.n_features,
+        n_output_ne=mn_data.n_classes,
+        n_hid_layers=3,
+        n_hid_neurons=512,
+        activation=Acti.tanh,
+        weight_init=Init.xavier,
+        optimizer=Optim.adam,
+        learning_rate=0.0006443732449600567,
+        l2_coeff=0,
+        batch_size=512,
+        epochs=15,
+        dropout_rate=0.051626532673010095
+    )
 
-best_fnm = FFNN(
-    n_features=mn_data.n_features,
-    n_output_ne=mn_data.n_classes,
-    n_hid_layers=3,
-    n_hid_neurons=512,
-    activation=Acti.tanh,
-    weight_init=Init.xavier,
-    optimizer=Optim.adam,
-    learning_rate=0.0006443732449600567,
-    l2_coeff=0,
-    batch_size=512,
-    epochs=15,
-    dropout_rate=0.051626532673010095
-)
 
-
-best_cifar = FFNN(
-    n_features=ci_data.n_features,
-    n_output_ne=ci_data.n_classes,
-    n_hid_layers=2,
-    n_hid_neurons=256,
-    activation="relu",
-    weight_init="he",
-    optimizer="adam",
-    learning_rate=0.001,
-    l2_coeff=1e-4,
-    batch_size=128,
-    epochs=20,
-    dropout_rate=0.0
-)
+def best_cifar(ci_data):
+    return FFNN(
+        n_features=ci_data.n_features,
+        n_output_ne=ci_data.n_classes,
+        n_hid_layers=2,
+        n_hid_neurons=256,
+        activation="relu",
+        weight_init="he",
+        optimizer="adam",
+        learning_rate=0.001,
+        l2_coeff=1e-4,
+        batch_size=128,
+        epochs=20,
+        dropout_rate=0.0
+    )
