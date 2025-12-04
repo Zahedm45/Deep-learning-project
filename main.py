@@ -1,7 +1,7 @@
 from operator import irshift
 
 import run
-from config import sweep_config1, sweep_config2, cifar1, best_fnm
+from config import sweep_config1, sweep_config2, cifar1, best_fnm, best_cifar
 from data import Data
 from nn.FFNN import FFNN
 from nn.Initializers import Init
@@ -44,7 +44,7 @@ def cifa():
     # sweep_id = wandb.sweep(cifar1, project="cifar")
     # wandb.agent(sweep_id, function=lambda: sweep_train(ci_data), count=30)
 
-    ci_model = best_fnm
+    ci_model = best_cifar
 
     run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 15)
     run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
