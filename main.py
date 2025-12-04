@@ -1,7 +1,7 @@
 from operator import irshift
 
 import run
-from WandbConfig import sweep_config1, sweep_config2, cifar1
+from config import sweep_config1, sweep_config2, cifar1, best_fnm
 from data import Data
 from nn.FFNN import FFNN
 from nn.Initializers import Init
@@ -44,20 +44,7 @@ def cifa():
     # sweep_id = wandb.sweep(cifar1, project="cifar")
     # wandb.agent(sweep_id, function=lambda: sweep_train(ci_data), count=30)
 
-    ci_model = FFNN(
-        n_features=ci_data.n_features,
-        n_output_ne=ci_data.n_classes,
-        n_hid_layers=2,
-        n_hid_neurons=256,
-        activation="relu",
-        weight_init="he",
-        optimizer="adam",
-        learning_rate=0.001,
-        l2_coeff=1e-4,
-        batch_size=128,
-        epochs=20,
-        dropout_rate=0.0
-    )
+    ci_model = best_fnm
 
     run.train(ci_model, ci_data.X_train, ci_data.y_train, ci_data.X_val, ci_data.y_val, 15)
     run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
@@ -68,35 +55,7 @@ def mnist():
     # sweep_id = wandb.sweep(sweep_config1, project="fmn")
     # wandb.agent(sweep_id, function=lambda: sweep_train(mn_data), count=40)
 
-    mn_model = FFNN(
-        n_features=mn_data.n_features,
-        n_output_ne=mn_data.n_classes,
-        n_hid_layers=3,
-        n_hid_neurons=512,
-        activation=Acti.tanh,
-        weight_init=Init.xavier,
-        optimizer=Optim.adam,
-        learning_rate=0.0006443732449600567,
-        l2_coeff=0,
-        batch_size=512,
-        epochs=15,
-        dropout_rate=0.051626532673010095
-    )
-
-    # mn_model = FFNN(
-    #     n_features=mn_data.n_features,
-    #     n_output_ne=mn_data.n_classes,
-    #     n_hid_layers=3,
-    #     n_hid_neurons=128,
-    #     activation=Acti.relu,
-    #     weight_init=Init.xavier,
-    #     optimizer=Optim.nesterov,
-    #     learning_rate=0.007300711433546043,
-    #     l2_coeff=0,
-    #     batch_size=64,
-    #     epochs=30,
-    #     dropout_rate=0.25
-    # )
+    mn_model = best_fnm
 
     run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
     run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
