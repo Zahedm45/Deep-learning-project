@@ -14,7 +14,11 @@ sweep_config1 = {
         "activation": {"values": Acti.as_arr},
         "optimizer": {"values": Optim.as_arr},
         "weight_init": {"values": Init.as_arr},
-        "epochs": {"value": 15}
+        "epochs": {"value": 15},
+        "dropout_rate": {
+            "min": 0.0,
+            "max": 0.4
+        }
     }
 }
 

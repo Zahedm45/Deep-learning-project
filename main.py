@@ -16,8 +16,6 @@ def sweep_train(data):
     wandb.init()
     cfg = wandb.config
 
-    #mn_data = load_fashion_mnist()
-
     model = FFNN(
         n_features=data.n_features,
         n_output_ne=data.n_classes,
@@ -65,24 +63,40 @@ def cifa():
     run.evaluate(ci_model, ci_data.X_test, ci_data.y_test)
 
 def mnist():
-    #sweep_id = wandb.sweep(sweep_config1, project="cifar")
-    #wandb.agent(sweep_id, function=sweep_train, count=30)
-
     mn_data: Data = load_fashion_mnist()
+
+    # sweep_id = wandb.sweep(sweep_config1, project="fmn")
+    # wandb.agent(sweep_id, function=lambda: sweep_train(mn_data), count=40)
+
     mn_model = FFNN(
         n_features=mn_data.n_features,
         n_output_ne=mn_data.n_classes,
         n_hid_layers=3,
-        n_hid_neurons=128,
-        activation=Acti.relu,
+        n_hid_neurons=512,
+        activation=Acti.tanh,
         weight_init=Init.xavier,
-        optimizer=Optim.nesterov,
-        learning_rate=0.007300711433546043,
+        optimizer=Optim.adam,
+        learning_rate=0.0006443732449600567,
         l2_coeff=0,
-        batch_size=64,
-        epochs=30,
-        dropout_rate=0.25
+        batch_size=512,
+        epochs=15,
+        dropout_rate=0.051626532673010095
     )
+
+    # mn_model = FFNN(
+    #     n_features=mn_data.n_features,
+    #     n_output_ne=mn_data.n_classes,
+    #     n_hid_layers=3,
+    #     n_hid_neurons=128,
+    #     activation=Acti.relu,
+    #     weight_init=Init.xavier,
+    #     optimizer=Optim.nesterov,
+    #     learning_rate=0.007300711433546043,
+    #     l2_coeff=0,
+    #     batch_size=64,
+    #     epochs=30,
+    #     dropout_rate=0.25
+    # )
 
     run.train(mn_model, mn_data.X_train, mn_data.y_train, mn_data.X_val, mn_data.y_val, patience=15)
     run.evaluate(mn_model, mn_data.X_test, mn_data.y_test)
@@ -112,6 +126,7 @@ def irish():
 
 
 if __name__ == "__main__":
-    #wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
+    wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
     mnist()
+    # cifa()
 

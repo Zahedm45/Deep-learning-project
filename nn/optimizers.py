@@ -83,14 +83,14 @@ class Nesterov:
 
             v_prev = self.velocity[key].copy()
 
-            # v = βv + lr * grad
+            # v = Bv + lr * grad
             self.velocity[key] = (
                 self.momentum * self.velocity[key]
                 + self.learning_rate * grads[key]
             )
 
             # Nesterov update:
-            # w = w - (βv_prev + (1-β)*v)
+            # w = w - (Bv_prev + (1-B)*v)
             params[key] -= (
                 self.momentum * v_prev
                 + (1 - self.momentum) * self.velocity[key]

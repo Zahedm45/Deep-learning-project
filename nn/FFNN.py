@@ -6,8 +6,6 @@ from nn.optimizers import Adam, SGD, SGDMomentum, Optim, Nesterov
 
 
 class FFNN:
-
-
     def __init__(
         self,
         n_features: int,                     # Number of features (number of input neurons)
@@ -16,7 +14,7 @@ class FFNN:
         n_hid_neurons: int = 128,            # Number of hidden neurons/nodes
         activation: str = "relu",            # Activation function to be used
         weight_init: str = "he",             # Intial weights initializer to be used
-        optimizer: str = Optim.adam,             # Optimizer func to be used
+        optimizer: str = Optim.adam,         # Optimizer func to be used
         learning_rate: float = 0.001,
         l2_coeff: float = 0.0,
         batch_size: int = 128,
@@ -35,7 +33,7 @@ class FFNN:
         self.epochs = epochs
         self.l2_coeff = l2_coeff
 
-        # Dropout
+        # For dropout
         self.dropout_rate = dropout_rate
         self.is_training = True
 
