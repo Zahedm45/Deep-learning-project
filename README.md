@@ -7,7 +7,7 @@ This project contains an implementation of a Feed-Forward Neural Network (FFNN) 
 To run the project, first set up a virtual environment and install dependencies:
 
 ```bash
-./setup_env.sh
+source setup_env.sh
 ```
 
 ## Running the Application
