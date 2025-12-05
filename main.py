@@ -1,12 +1,9 @@
 from operator import irshift
-
+import sys
 import run
-from config import sweep_config1, sweep_config2, cifar1, best_fnm, best_cifar
+from config import best_fnm, best_cifar
 from data import Data
 from nn.FFNN import FFNN
-from nn.Initializers import Init
-from nn.activation_functions import Acti
-from nn.optimizers import Optim
 from utils import load_fashion_mnist, load_cifar10, load_iris_dataset
 
 import wandb
@@ -86,6 +83,10 @@ def irish():
 
 if __name__ == "__main__":
     #wandb.login(key="80e34afedacdbb1d88db7ef60f755b6b7666eb4e")
-    mnist()
-    # cifa()
+
+    arg = sys.argv[1].lower()
+    if arg == "cifa":
+        cifa()
+    else:
+        mnist()
 
